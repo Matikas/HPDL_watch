@@ -46,7 +46,7 @@ ISR(TIMER2_OVF_vect)
 	{
 		
 		PORTD&=~BLANK_DISPLAY;
-		//PORTD&=~DISPLAY_POWER;
+		PORTD&=~DISPLAY_POWER;
 
 		cli();
 		sleep_enable();
