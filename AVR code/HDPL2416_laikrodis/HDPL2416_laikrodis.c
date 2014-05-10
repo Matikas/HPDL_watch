@@ -34,7 +34,6 @@ uint8_t dispIsOn;
 ISR(TIMER2_OVF_vect)
 {
 	time_s+=8;
-	//time_s += 1;
 	if(time_s >= 86400)
 	time_s = 0;
 	
@@ -56,7 +55,7 @@ ISR(TIMER2_OVF_vect)
 	}
 }
 
-//Prideti valanda
+//Add hour
 ISR(INT0_vect)
 {
 	if(dispIsOn == 1)
@@ -79,7 +78,7 @@ ISR(INT0_vect)
 	dispIsOn = 1;
 }
 
-//Prideti minute
+//Add minute
 ISR(INT1_vect)
 {
 	if(dispIsOn == 1)
@@ -100,15 +99,6 @@ ISR(INT1_vect)
 		sei();
 	}
 	dispIsOn = 1;
-}
-
-//Ijungti displeju
-ISR(INT2_vect)
-{
-	TimeStamp = time_s;
-	PORTD |= DISPLAY_POWER;
-	PORTD|=BLANK_DISPLAY;
-	UpdateDisplay(time_s);
 }
 
 void UpdateDisplay(uint32_t seconds)
@@ -143,15 +133,14 @@ int main(void)
 	DDRC=0xFF;
 	DDRA=0xFF;
 	DDRB=0xFF;
-	PORTC&=0;	//Duomenys
-	//PORTD&=0;	//BL prijungtas prie PD7
-	PORTA&=0;	//Adresai
+	PORTC&=0;	//Data for display
+	PORTA&=0;	//Addresses of display 
 	PORTB&=0;
 	
 	PORTD |= DISPLAY_POWER;
 	PORTD |= BLANK_DISPLAY;
 	
-	//8bit timer2 nustatymai
+	//8bit timer2 setup
 	//Set prescale to 1024
 	TCCR2 |= (1<<CS22)|(1<<CS21)|(1<<CS20);
 	//wait for registers update
@@ -161,7 +150,7 @@ int main(void)
 	//enable TOV2 interrupt
 	TIMSK  = (1<<TOIE2);
 	
-	//Mygtuku interruptai
+	//Button interrupts
 	MCUCR |= 0x0F; //(ISC00 - ISC11) == 1
 	GICR |= (1<<INT0) | (1<<INT1) | (1<<INT2);
 	MCUCSR |= (1<<ISC2);
